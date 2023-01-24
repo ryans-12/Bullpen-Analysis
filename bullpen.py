@@ -8,13 +8,16 @@ df = pd.read_csv('psu-pitching.csv')
 
 
 
+
 def pitcher_change():
     #adds column to show true if pitcher id changes
     df["PitcherChanged"] = df["PitcherId"].shift() != df["PitcherId"]
+    #adds column to track who pitched before current pitcher
+    df["Pitcher Before"] = df["PitcherId"].shift().fillna(0).astype(int)
 
 #gets list of pitchers who did not start game
 def get_relievers():
-    #relievers = dataframe of pitchers who are new but didnt start
+    #relievers = dataframe of pitchers who are subbed in but didnt start
     relievers = df.loc[(df["PitcherChanged"] == True) & (df["PitchNo"] != 1)]
     relievers_list = relievers["PitcherId"].unique()
     return relievers_list
@@ -24,6 +27,7 @@ def pitchdata_by_day():
     #selected_data = all pitches with selected pitcherId
     selected_data = df[df["PitcherId"] == selected_pitcher]
     #########
+    st.dataframe(df)
     st.dataframe(selected_data)
     ########
     dates = selected_data["Date"].unique()
